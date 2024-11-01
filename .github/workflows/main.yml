@@ -5,13 +5,13 @@ on: push
 jobs: 
   build:
     runs-on: ubuntu-latest
-     steps:
-       - uses: actions/checkout@v3
-       - name: Install boost
-          run: sudo apt-get update && sudo apt install libboost-all-dev
-       - name: Configure Cmake
-          run: cmake -S . -B build
-       - name: Build
-          run: cmake --build build 
-       - name: execute
-          run: ./build/src/test/VDSProject_test
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install boost
+      run: sudo apt-get update && sudo apt install libboost-all-dev
+    - name: Configure Cmake
+      run: cmake -S . -B build
+    - name: Build
+      run: cmake --build build 
+    - name: execute
+      run: ./build/src/test/VDSProject_test
