@@ -1,3 +1,5 @@
 gtest/
 build/
 Testing/
+.vscode/
+doxygen/
