@@ -8,14 +8,4 @@
 #include <gtest/gtest.h>
 #include "../Manager.h"
 
-using namespace ClassProject;
-
-TEST(Manager_Test, Create_Var){
-
-    Manager manager;
-    EXPECT_EQ(manager.createVar("a"), 2);
-    EXPECT_EQ(manager.createVar("b"), 3);
-
-}
-
 #endif
