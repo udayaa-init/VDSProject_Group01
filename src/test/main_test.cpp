@@ -19,6 +19,13 @@ TEST_F(ManagerTest, CreateVar){
 
 }
 
+TEST_F(ManagerTest, IsConstant) {
+  EXPECT_TRUE(manager.isConstant(0));
+  EXPECT_TRUE(manager.isConstant(1));
+  EXPECT_FALSE(manager.isConstant(2));
+  EXPECT_FALSE(manager.isConstant(3));
+}
+
 int main(int argc, char* argv[])
 {
     ::testing::InitGoogleTest(&argc, argv);
