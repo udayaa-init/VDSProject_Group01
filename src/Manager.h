@@ -5,13 +5,29 @@
 #ifndef VDSPROJECT_MANAGER_H
 #define VDSPROJECT_MANAGER_H
 
+#include <vector>
+#include <string>
 #include "ManagerInterface.h"
 
+
 namespace ClassProject {
+    struct Node{
+        BDD_ID high;
+        BDD_ID low;
+        BDD_ID top_var;
+        BDD_ID id;
+        std::string var_name;
 
+        Node(BDD_ID id, std::string name):id(id), var_name(name){};
+
+    };
     class Manager: public ManagerInterface{
-
+        private:
+            std::vector<Node> nodeTable;
         public:
+
+            Manager();
+
             BDD_ID createVar(const std::string &label) override;
 
             // Adding place holder to compile it

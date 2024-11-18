@@ -5,6 +5,20 @@
 
 #include "Tests.h"
 
+using namespace ClassProject;
+
+class ManagerTest : public :: testing::Test {
+    protected:
+    Manager manager;   
+};
+
+TEST_F(ManagerTest, CreateVar){
+    
+    EXPECT_EQ(manager.createVar("a"), 2);
+    EXPECT_EQ(manager.createVar("b"), 3);
+
+}
+
 int main(int argc, char* argv[])
 {
     ::testing::InitGoogleTest(&argc, argv);
