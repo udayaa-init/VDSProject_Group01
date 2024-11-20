@@ -30,6 +30,12 @@ TEST_F(ManagerTest, True) { EXPECT_EQ(manager.True(), 1); }
 
 TEST_F(ManagerTest, False) { EXPECT_EQ(manager.False(), 0); }
 
+TEST_F(ManagerTest, UniqueTableSize) { 
+    manager.createVar("a");
+    manager.createVar("b");
+    EXPECT_EQ(manager.uniqueTableSize(), 4); 
+}
+
 int main(int argc, char* argv[])
 {
     ::testing::InitGoogleTest(&argc, argv);
