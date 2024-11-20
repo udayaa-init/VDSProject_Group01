@@ -30,10 +30,15 @@ TEST_F(ManagerTest, True) { EXPECT_EQ(manager.True(), 1); }
 
 TEST_F(ManagerTest, False) { EXPECT_EQ(manager.False(), 0); }
 
-TEST_F(ManagerTest, UniqueTableSize) { 
+TEST_F(ManagerTest, UniqueTableSize) {
     manager.createVar("a");
     manager.createVar("b");
     EXPECT_EQ(manager.uniqueTableSize(), 4); 
+}
+
+TEST_F(ManagerTest, topVarName) { 
+    EXPECT_EQ(manager.getTopVarName(0), "False"); 
+    EXPECT_EQ(manager.getTopVarName(1), "True");
 }
 
 int main(int argc, char* argv[])
