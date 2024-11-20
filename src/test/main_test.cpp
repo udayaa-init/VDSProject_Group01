@@ -26,6 +26,10 @@ TEST_F(ManagerTest, IsConstant) {
   EXPECT_FALSE(manager.isConstant(3));
 }
 
+TEST_F(ManagerTest, True) { EXPECT_EQ(manager.True(), 1); }
+
+TEST_F(ManagerTest, False) { EXPECT_EQ(manager.False(), 0); }
+
 int main(int argc, char* argv[])
 {
     ::testing::InitGoogleTest(&argc, argv);
