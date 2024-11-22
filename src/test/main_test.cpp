@@ -10,12 +10,18 @@ using namespace ClassProject;
 class ManagerTest : public :: testing::Test {
     protected:
     Manager manager;   
+
+    virtual void SetUp()
+    { 
+        manager.createVar("a");
+        manager.createVar("b");
+    }
 };
 
 TEST_F(ManagerTest, CreateVar){
     
-    EXPECT_EQ(manager.createVar("a"), 2);
-    EXPECT_EQ(manager.createVar("b"), 3);
+    EXPECT_EQ(manager.createVar("c"), 4);
+    EXPECT_EQ(manager.createVar("d"), 5);
 
 }
 
@@ -24,6 +30,13 @@ TEST_F(ManagerTest, IsConstant) {
   EXPECT_TRUE(manager.isConstant(1));
   EXPECT_FALSE(manager.isConstant(2));
   EXPECT_FALSE(manager.isConstant(3));
+}
+
+TEST_F(ManagerTest, IsVariable) {
+  EXPECT_FALSE(manager.isVariable(0));
+  EXPECT_FALSE(manager.isVariable(1));
+  EXPECT_TRUE(manager.isVariable(2));
+  EXPECT_TRUE(manager.isVariable(3));
 }
 
 TEST_F(ManagerTest, True) { EXPECT_EQ(manager.True(), 1); }
