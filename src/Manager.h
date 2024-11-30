@@ -35,11 +35,11 @@ namespace ClassProject {
 
             const BDD_ID &False() override {return NULL;};
 
-            bool isConstant(BDD_ID f) override {return 0;};
+            bool isConstant(BDD_ID f) override;
 
-            bool isVariable(BDD_ID x) override {return 0;};
+            bool isVariable(BDD_ID x) override;
 
-            BDD_ID topVar(BDD_ID f) override {return 0;};
+            BDD_ID topVar(BDD_ID f) override ;
 
             BDD_ID ite(BDD_ID i, BDD_ID t, BDD_ID e) override {return 0;};
 
@@ -65,7 +65,7 @@ namespace ClassProject {
 
             BDD_ID xnor2(BDD_ID a, BDD_ID b) override {return 0;};
 
-            std::string getTopVarName(const BDD_ID &root) override {return 0;};
+            std::string getTopVarName(const BDD_ID &root) override;
 
             void findNodes(const BDD_ID &root, std::set<BDD_ID> &nodes_of_root) override {return ;};
 
