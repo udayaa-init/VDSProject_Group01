@@ -31,9 +31,9 @@ namespace ClassProject {
             BDD_ID createVar(const std::string &label) override;
 
             // Adding place holder to compile it
-            const BDD_ID &True() override {return nodeTable[1].id;};
+            const BDD_ID &True() override;
 
-            const BDD_ID &False() override {return nodeTable[0].id;};
+            const BDD_ID &False() override;
 
             bool isConstant(BDD_ID f) override;
 
@@ -71,7 +71,7 @@ namespace ClassProject {
 
             void findVars(const BDD_ID &root, std::set<BDD_ID> &vars_of_root) override {return ;};
 
-            size_t uniqueTableSize() override {return nodeTable.size();};
+            size_t uniqueTableSize() override;
 
             void visualizeBDD(std::string filepath, BDD_ID &root) override {return ;};
 
