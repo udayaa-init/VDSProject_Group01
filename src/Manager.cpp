@@ -20,6 +20,25 @@ namespace ClassProject{
       return nodeTable[nodeTable.size()-1].id;
    }
 
+   BDD_ID Manager::createVar(const std::string& label, const BDD_ID& top, const BDD_ID& high, const BDD_ID& low) {
+      BDD_ID nodeId = createVar(label);
+      nodeTable[nodeId].high= high;
+      nodeTable[nodeId].low= low;
+      nodeTable[nodeId].top_var= top;
+      return nodeTable[nodeTable.size()-1].id;
+   }
+
+   const BDD_ID&  Manager::True() {
+   return nodeTable[1].id;
+   }
+ 
+   const BDD_ID&  Manager::False() {
+   return nodeTable[0].id;
+   }
+
+   size_t Manager::uniqueTableSize() {return nodeTable.size();}
+  
+
    bool Manager::isConstant(BDD_ID f){
       auto & refNode = nodeTable[f];
       return (refNode.id == refNode.high) && (refNode.id == refNode.low) &&(refNode.id == refNode.top_var);
