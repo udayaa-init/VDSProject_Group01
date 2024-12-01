@@ -20,6 +20,19 @@ namespace ClassProject{
       return nodeTable[nodeTable.size()-1].id;
    }
 
+
+
+   const BDD_ID&  Manager::True() {
+   return nodeTable[1].id;
+   }
+ 
+   const BDD_ID&  Manager::False() {
+   return nodeTable[0].id;
+   }
+
+   size_t Manager:: uniqueTableSize() {return nodeTable.size();}
+  
+
    bool Manager::isConstant(BDD_ID f){
       auto & refNode = nodeTable[f];
       return (refNode.id == refNode.high) && (refNode.id == refNode.low) &&(refNode.id == refNode.top_var);
