@@ -30,6 +30,9 @@ namespace ClassProject {
 
             BDD_ID createVar(const std::string &label) override;
 
+            BDD_ID createVar(const std::string& label, const BDD_ID& top,
+                          const BDD_ID& high, const BDD_ID& low);
+
             // Adding place holder to compile it
             const BDD_ID &True() override;
 
