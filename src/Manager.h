@@ -50,9 +50,9 @@ namespace ClassProject {
 
             BDD_ID coFactorFalse(BDD_ID f, BDD_ID x) override {return 0;};
 
-            BDD_ID coFactorTrue(BDD_ID f) override {return 0;};
+            BDD_ID coFactorTrue(BDD_ID f) override ;
 
-            BDD_ID coFactorFalse(BDD_ID f) override {return 0;};
+            BDD_ID coFactorFalse(BDD_ID f) override;
 
             BDD_ID and2(BDD_ID a, BDD_ID b) override {return 0;};
 
