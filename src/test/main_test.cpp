@@ -78,22 +78,22 @@ TEST_F(ManagerTest, topVarName) {
     EXPECT_EQ(manager.getTopVarName(1), "True");
 }
 
-TEST_F(ManagerTest, ExistingcoFactorTrue) { 
+TEST_F(ManagerTest, ExistingcoFactorFalse) { 
     SetExample();
 
-    EXPECT_EQ(manager.coFactorTrue(0), 0); 
-    EXPECT_EQ(manager.coFactorTrue(1), 1);
-    EXPECT_EQ(manager.coFactorTrue(2), 0); 
-    EXPECT_EQ(manager.coFactorTrue(3), 0);
-    EXPECT_EQ(manager.coFactorTrue(4), 0); 
-    EXPECT_EQ(manager.coFactorTrue(5), 0);
-    EXPECT_EQ(manager.coFactorTrue(6), 3); 
-    EXPECT_EQ(manager.coFactorTrue(7), 0);
-    EXPECT_EQ(manager.coFactorTrue(8), 0); 
-    EXPECT_EQ(manager.coFactorTrue(9), 8);
+    EXPECT_EQ(manager.coFactorFalse(0), 0); 
+    EXPECT_EQ(manager.coFactorFalse(1), 1);
+    EXPECT_EQ(manager.coFactorFalse(2), 0); 
+    EXPECT_EQ(manager.coFactorFalse(3), 0);
+    EXPECT_EQ(manager.coFactorFalse(4), 0); 
+    EXPECT_EQ(manager.coFactorFalse(5), 0);
+    EXPECT_EQ(manager.coFactorFalse(6), 3); 
+    EXPECT_EQ(manager.coFactorFalse(7), 0);
+    EXPECT_EQ(manager.coFactorFalse(8), 0); 
+    EXPECT_EQ(manager.coFactorFalse(9), 8);
 }
 
-TEST_F(ManagerTest, ExistingcoFactorFalse) { 
+TEST_F(ManagerTest, ExistingcoFactorTrue) { 
     SetExample();
 
     EXPECT_EQ(manager.coFactorTrue(0), 0); 

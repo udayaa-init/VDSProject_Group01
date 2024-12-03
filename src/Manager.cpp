@@ -16,7 +16,10 @@ namespace ClassProject{
 
    BDD_ID Manager::createVar(const std::string &label){
       nodeTable.push_back(Node(nodeTable.size(), label));
-      nodeTable.back().top_var = nodeTable.back().id;
+      auto & newNode = nodeTable.back();
+      newNode.top_var = newNode.id;
+      newNode.high = 1; 
+      newNode.low = 0;
       return nodeTable[nodeTable.size()-1].id;
    }
 
@@ -55,4 +58,8 @@ namespace ClassProject{
    bool Manager::isVariable(BDD_ID x){
       return !isConstant(x) && (nodeTable[x].top_var == x);
    }
+
+   BDD_ID Manager::coFactorTrue(BDD_ID f) { return nodeTable[f].high ; }
+   BDD_ID Manager::coFactorFalse(BDD_ID f) { return nodeTable[f].low; }
+
 }
