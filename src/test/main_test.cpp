@@ -108,16 +108,60 @@ TEST_F(ManagerTest, ExistingcoFactorTrue) {
     EXPECT_EQ(manager.coFactorTrue(9), 7);
 }
 
-// TEST_F(ManagerTest, iteTerminalCase) {
-//     // I == true
-//     EXPECT_EQ(manager.ite(1, 2, 3),2); 
-//     // I == false
-//     EXPECT_EQ(manager.ite(0, 2, 3),3);
-//     // T == E
-//     EXPECT_EQ(manager.ite(2, 3, 3),3);
-//     // if T == 1 and E ==  0
-//     EXPECT_EQ(manager.ite(2, 1, 0),2);
-// }
+TEST_F(ManagerTest, iteTerminalCase) {
+    // I == true
+    EXPECT_EQ(manager.ite(1, 2, 3),2); 
+    // I == false
+    EXPECT_EQ(manager.ite(0, 2, 3),3);
+    // T == E
+    EXPECT_EQ(manager.ite(2, 3, 3),3);
+    // if T == 1 and E ==  0
+    EXPECT_EQ(manager.ite(2, 1, 0),2);
+}
+
+TEST_F(ManagerTest, coFactorTrueTerminalCase) {
+    // f is constant
+    EXPECT_EQ(manager.coFactorTrue(1, 3),1); 
+    // x is constant
+    EXPECT_EQ(manager.coFactorTrue(3, 1),3);
+    // x is the top var for f
+    EXPECT_EQ(manager.coFactorTrue(3, 3),3);
+    // f doesnt depend on x
+    EXPECT_EQ(manager.coFactorTrue(3, 2),3);
+}
+
+TEST_F(ManagerTest, coFactorFalseTerminalCase) {
+    // f is constant
+    EXPECT_EQ(manager.coFactorFalse(0, 3),0); 
+    // x is constant
+    EXPECT_EQ(manager.coFactorFalse(3, 0),3);
+    // x is the top var for f
+    EXPECT_EQ(manager.coFactorFalse(3, 3),3);
+    // f doesnt depend on x
+    EXPECT_EQ(manager.coFactorFalse(3, 2),3);
+}
+
+TEST_F(ManagerTest, coFactoriteExampleTest) {
+    // f = (a + b) ∗c ∗d
+
+    // (a + b)
+    manager.ite(2,1,3);
+    // c * d
+    manager.ite(4,5,0);
+    // (a + b) ∗c ∗d
+    manager.ite(6,7,0);
+
+    // Verfying the resultant tree
+    EXPECT_EQ(manager.coFactorFalse(6), 3); 
+    EXPECT_EQ(manager.coFactorFalse(7), 0);
+    EXPECT_EQ(manager.coFactorFalse(8), 0); 
+    EXPECT_EQ(manager.coFactorFalse(9), 8);
+
+    EXPECT_EQ(manager.coFactorTrue(6), 1); 
+    EXPECT_EQ(manager.coFactorTrue(7), 5);
+    EXPECT_EQ(manager.coFactorTrue(8), 7); 
+    EXPECT_EQ(manager.coFactorTrue(9), 7);
+}
 
 
 
