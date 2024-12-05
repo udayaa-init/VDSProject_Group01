@@ -78,6 +78,7 @@ namespace ClassProject {
 
             void visualizeBDD(std::string filepath, BDD_ID &root) override {return ;};
 
+            BDD_ID find_or_add_unique_table(Node& x, BDD_ID r_low, BDD_ID r_high,  std::string te);
     };
 
 }
