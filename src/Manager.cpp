@@ -62,4 +62,30 @@ namespace ClassProject{
    BDD_ID Manager::coFactorTrue(BDD_ID f) { return nodeTable[f].high ; }
    BDD_ID Manager::coFactorFalse(BDD_ID f) { return nodeTable[f].low; }
 
+   BDD_ID Manager::coFactorTrue(BDD_ID f, BDD_ID x)
+   {  
+   auto &node = nodeTable[f]
+   if (node.top_var == x) return note.high;
+   if (isConstant(f) || isConstant(x) || node.top_var>x) return f;
+
+   auto high_part = coFactorTrue(node.high, x);
+   auto low_part = coFactorTrue(node.low, x);
+   return ite(node.top_var, high_part, low_part);
+   }
+
+     BDD_ID Manager::coFactorFalse(BDD_ID f, BDD_ID x)
+   {  
+   auto &node = nodeTable[f]
+   if (node.top_var == x) return note.low;
+   if (isConstant(f) || isConstant(x) || node.top_var>x) return f;
+
+   auto high_part = coFactorTrue(node.high, x);
+   auto low_part = coFactorTrue(node.low, x);
+   return ite(node.top_var, high_part, low_part);
+   };
+
+
+
+
+
 }
