@@ -125,7 +125,7 @@ TEST_F(ManagerTest, coFactorTrueTerminalCase) {
     // x is constant
     EXPECT_EQ(manager.coFactorTrue(3, 1),3);
     // x is the top var for f
-    EXPECT_EQ(manager.coFactorTrue(3, 3),3);
+    EXPECT_EQ(manager.coFactorTrue(3, 3),1);
     // f doesnt depend on x
     EXPECT_EQ(manager.coFactorTrue(3, 2),3);
 }
@@ -136,7 +136,7 @@ TEST_F(ManagerTest, coFactorFalseTerminalCase) {
     // x is constant
     EXPECT_EQ(manager.coFactorFalse(3, 0),3);
     // x is the top var for f
-    EXPECT_EQ(manager.coFactorFalse(3, 3),3);
+    EXPECT_EQ(manager.coFactorFalse(3, 3),0);
     // f doesnt depend on x
     EXPECT_EQ(manager.coFactorFalse(3, 2),3);
 }
