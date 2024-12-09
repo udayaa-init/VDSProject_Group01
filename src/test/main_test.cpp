@@ -125,7 +125,7 @@ TEST_F(ManagerTest, coFactorTrueTerminalCase) {
     // x is constant
     EXPECT_EQ(manager.coFactorTrue(3, 1),3);
     // x is the top var for f
-    EXPECT_EQ(manager.coFactorTrue(3, 3),3);
+    EXPECT_EQ(manager.coFactorTrue(3, 3),1);
     // f doesnt depend on x
     EXPECT_EQ(manager.coFactorTrue(3, 2),3);
 }
@@ -136,7 +136,7 @@ TEST_F(ManagerTest, coFactorFalseTerminalCase) {
     // x is constant
     EXPECT_EQ(manager.coFactorFalse(3, 0),3);
     // x is the top var for f
-    EXPECT_EQ(manager.coFactorFalse(3, 3),3);
+    EXPECT_EQ(manager.coFactorFalse(3, 3),0);
     // f doesnt depend on x
     EXPECT_EQ(manager.coFactorFalse(3, 2),3);
 }
@@ -161,7 +161,109 @@ TEST_F(ManagerTest, coFactoriteExampleTest) {
     EXPECT_EQ(manager.coFactorTrue(7), 5);
     EXPECT_EQ(manager.coFactorTrue(8), 7); 
     EXPECT_EQ(manager.coFactorTrue(9), 7);
+
 }
+
+TEST_F(ManagerTest, and2) {
+    // Setup() in the ManagerTest (Test Fixture) has already added a,b,c,d to the NodeTable
+
+    // Now we will call and2() with the ids for the variables a (=2) and b (=3), it will return the id of the newly created node
+    BDD_ID newNodeID = manager.and2(2,3);
+
+    // The newly added node should have top variable = a (2), high = b (3), low = False (0)
+    EXPECT_EQ(manager.topVar(newNodeID), 2);
+    EXPECT_EQ(manager.coFactorTrue(newNodeID), 3);
+    EXPECT_EQ(manager.coFactorFalse(newNodeID), 0);
+}
+
+TEST_F(ManagerTest, neg){
+    // Setup() in the ManagerTest has already added a,b,c,d to the nodeTable 
+    //Now we will call neg() with the ids for the variable b (=3), it will return the id of the newly created node
+    BDD_ID newNodeID = manager.neg(3);
+
+    //The newly added node should have top variable = b (3), high = False (0), low = True(1);
+    EXPECT_EQ(manager.topVar(newNodeID), 3);
+    EXPECT_EQ(manager.coFactorTrue(newNodeID), 0);
+    EXPECT_EQ(manager.coFactorFalse(newNodeID), 1);
+}
+
+TEST_F(ManagerTest, or2){
+    // Setup() in the ManagerTest has already added a,b,c,d to the nodeTable 
+    //Now we will call or2() with the ids for the variables a (=2) and b (=3), it will return the id of the newly created node
+    BDD_ID newNodeID = manager.or2(2,3);
+
+    //The newly added node should have top variable = a (2), high = True (1), low = b (3);
+    EXPECT_EQ(manager.topVar(newNodeID), 2);
+    EXPECT_EQ(manager.coFactorTrue(newNodeID), 1);
+    EXPECT_EQ(manager.coFactorFalse(newNodeID), 3);
+}
+
+TEST_F(ManagerTest, nor2){
+    // Setup() in the ManagerTest has already added a,b,c,d to the nodeTable 
+    //Now we will call nor2() with the ids for the variables a (=2) and b (=3), it will return the id of the newly created node
+    BDD_ID newNodeID = manager.nor2(2,3);
+
+    //The newly added node should have top variable = a (2), high = False (0), low = b_not (6);
+    EXPECT_EQ(manager.topVar(newNodeID), 2);
+    EXPECT_EQ(manager.coFactorTrue(newNodeID), 0);
+    EXPECT_EQ(manager.coFactorFalse(newNodeID), (newNodeID - 1));
+
+    // A new node for b_not should also be created
+    EXPECT_EQ(manager.topVar(newNodeID - 1), 2);
+    EXPECT_EQ(manager.coFactorTrue(newNodeID - 1), 0);
+    EXPECT_EQ(manager.coFactorFalse(newNodeID - 1), 1);
+
+}
+
+TEST_F(ManagerTest, nand2){
+    // Setup() in the ManagerTest has already added a,b,c,d to the nodeTable 
+    //Now we will call nand2() with the ids for the variables a (=2) and b (=3), it will return the id of the newly created node
+    BDD_ID newNodeID = manager.nor2(2,3);
+    
+    //The newly added node should have top variable = a (2), high = b_not (6), low = True (1);
+    EXPECT_EQ(manager.topVar(newNodeID), 2);
+    EXPECT_EQ(manager.coFactorTrue(newNodeID), (newNodeID - 1));
+    EXPECT_EQ(manager.coFactorFalse(newNodeID), 1);
+
+    // A new node for b_not should also be created
+    EXPECT_EQ(manager.topVar(newNodeID - 1), 2);
+    EXPECT_EQ(manager.coFactorTrue(newNodeID - 1), 0);
+    EXPECT_EQ(manager.coFactorFalse(newNodeID - 1), 1);    
+}
+
+TEST_F(ManagerTest, xor2){
+    // Setup() in the ManagerTest has already added a,b,c,d to the nodeTable 
+    //Now we will call nand2() with the ids for the variables a (=2) and b (=3), it will return the id of the newly created node
+    BDD_ID newNodeID = manager.xor2(2,3);
+
+    //The newly added node should have top variable = a (2), high = b_not (6), low = b (3);
+    EXPECT_EQ(manager.topVar(newNodeID), 2);
+    EXPECT_EQ(manager.coFactorTrue(newNodeID), (newNodeID - 1));
+    EXPECT_EQ(manager.coFactorFalse(newNodeID), 3);
+
+    // A new node for b_not should also be created
+    EXPECT_EQ(manager.topVar(newNodeID - 1), 2);
+    EXPECT_EQ(manager.coFactorTrue(newNodeID - 1), 0);
+    EXPECT_EQ(manager.coFactorFalse(newNodeID - 1), 1);  
+}
+
+TEST_F(ManagerTest, xnor2){
+    // Setup() in the ManagerTest has already added a,b,c,d to the nodeTable 
+    //Now we will call nand2() with the ids for the variables a (=2) and b (=3), it will return the id of the newly created node
+    BDD_ID newNodeID = manager.xnor2(2,3);
+
+    //The newly added node should have top variable = a (2), high = b (3), low = b_not(6);
+    EXPECT_EQ(manager.topVar(newNodeID), 2);
+    EXPECT_EQ(manager.coFactorTrue(newNodeID), 3);
+    EXPECT_EQ(manager.coFactorFalse(newNodeID), (newNodeID - 1));
+
+    // A new node for b_not should also be created
+    EXPECT_EQ(manager.topVar(newNodeID - 1), 2);
+    EXPECT_EQ(manager.coFactorTrue(newNodeID - 1), 0);
+    EXPECT_EQ(manager.coFactorFalse(newNodeID - 1), 1);  
+}
+
+
 
 
 

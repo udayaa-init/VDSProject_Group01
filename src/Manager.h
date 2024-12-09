@@ -44,11 +44,11 @@ namespace ClassProject {
 
             BDD_ID topVar(BDD_ID f) override ;
 
-            BDD_ID ite(BDD_ID i, BDD_ID t, BDD_ID e) override {return 0;};
+            BDD_ID ite(BDD_ID i, BDD_ID t, BDD_ID e) override;
 
-            BDD_ID coFactorTrue(BDD_ID f, BDD_ID x) override {return 0;};
+            BDD_ID coFactorTrue(BDD_ID f, BDD_ID x) override;
 
-            BDD_ID coFactorFalse(BDD_ID f, BDD_ID x) override {return 0;};
+            BDD_ID coFactorFalse(BDD_ID f, BDD_ID x) override;
 
             BDD_ID coFactorTrue(BDD_ID f) override ;
 
@@ -78,6 +78,7 @@ namespace ClassProject {
 
             void visualizeBDD(std::string filepath, BDD_ID &root) override {return ;};
 
+            BDD_ID find_or_add_unique_table(Node& x, BDD_ID r_low, BDD_ID r_high,  std::string te);
     };
 
 }
