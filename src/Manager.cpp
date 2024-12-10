@@ -157,4 +157,30 @@ namespace ClassProject{
       return xor_id;
    }
 
+   BDD_ID Manager::nand2(BDD_ID a, BDD_ID b) 
+   {
+      BDD_ID nand_id = ite(a, neg(b), True());
+      auto & nand_node = nodeTable[nand_id];
+      nand_node.var_name = "(" +nodeTable[a].var_name +" nand "+ nodeTable[b].var_name + ")";
+      return nand_id;
+   }
+
+
+   BDD_ID Manager::nor2(BDD_ID a, BDD_ID b) 
+   {
+      BDD_ID nor_id = ite(a, False(), neg(b));
+      auto & nor_node = nodeTable[nor_id];
+      nor_node.var_name = "(" +nodeTable[a].var_name +" nor "+ nodeTable[b].var_name + ")";
+      return nor_id;
+   }
+
+
+   BDD_ID Manager::xnor2(BDD_ID a, BDD_ID b) 
+   {
+      BDD_ID xnor_id = ite(a, b, neg(b));
+      auto & xnor_node = nodeTable[xnor_id];
+      xnor_node.var_name = "(" +nodeTable[a].var_name +" xnor "+ nodeTable[b].var_name + ")";
+      return xnor_id;
+   }
+
 }
