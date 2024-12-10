@@ -183,4 +183,24 @@ namespace ClassProject{
       return xnor_id;
    }
 
+   void Manager::findNodes(const BDD_ID &root, std::set<BDD_ID> &nodes_of_root){
+      auto & root_node = nodeTable[root];
+      nodes_of_root.insert(root);
+      if(isConstant(root)) return;
+
+      findNodes(root_node.high, nodes_of_root);
+      findNodes(root_node.low, nodes_of_root);
+
+   }
+
+   void Manager::findVars(const BDD_ID &root, std::set<BDD_ID> &vars_of_root){
+      auto & root_node = nodeTable[root];
+      vars_of_root.insert(root_node.top_var);
+      if(isConstant(root)) return;
+
+      findVars(root_node.high, vars_of_root);
+      findVars(root_node.low, vars_of_root);
+   }
+
+
 }
