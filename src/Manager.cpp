@@ -65,8 +65,8 @@ namespace ClassProject{
 
    BDD_ID Manager::coFactorTrue(BDD_ID f, BDD_ID x) {  
    auto &node = nodeTable[f];
-   if (node.top_var == x) return node.high;
    if (isConstant(f) || isConstant(x) || node.top_var>x) return f;
+   if (node.top_var == x) return node.high;
 
    auto high_part = coFactorTrue(node.high, x);
    auto low_part = coFactorTrue(node.low, x);
@@ -75,11 +75,11 @@ namespace ClassProject{
 
    BDD_ID Manager::coFactorFalse(BDD_ID f, BDD_ID x) {  
    auto &node = nodeTable[f];
-   if (node.top_var == x) return node.low;
    if (isConstant(f) || isConstant(x) || node.top_var>x) return f;
+   if (node.top_var == x) return node.low;
 
-   auto high_part = coFactorTrue(node.high, x);
-   auto low_part = coFactorTrue(node.low, x);
+   auto high_part = coFactorFalse(node.high, x);
+   auto low_part = coFactorFalse(node.low, x);
    return ite(node.top_var, high_part, low_part);
    };
 
@@ -99,14 +99,14 @@ namespace ClassProject{
       // we need to extract the top variable from i,t,e and order them based on the index values(assending) and top variable should not be constant
       std::vector<BDD_ID> x_vars = {topVar(i),topVar(t),topVar(e)};
       std::sort(x_vars.begin(), x_vars.end()); //induces variable ordering
-      for(BDD_ID top_var : x_vars)
-      {
-         if(isConstant(top_var))
-            x_vars.erase(std::remove(x_vars.begin(), x_vars.end(), top_var), x_vars.end());
+      for (auto it = x_vars.begin(); it != x_vars.end(); ) {
+        if (isConstant(*it)) {
+            it = x_vars.erase(it); // Erase the element and update the iterator
+        } else {
+            ++it; // Move to the next element
+        }
       }
-      
       auto & x_node = nodeTable[x_vars.front()];
-
       auto r_high = ite(coFactorTrue(i, x_node.id), coFactorTrue(t, x_node.id),
                   coFactorTrue(e, x_node.id));
       auto r_low = ite(coFactorFalse(i, x_node.id), coFactorFalse(t, x_node.id),
@@ -128,4 +128,79 @@ namespace ClassProject{
       return createVar("ite( " + x.var_name + ", " +te +")",x.id, r_high, r_low);
 
     }
+
+   BDD_ID Manager::and2(BDD_ID a, BDD_ID b){
+      BDD_ID and_id = ite(a, b, False());
+      auto & and_node = nodeTable[and_id];
+      and_node.var_name = "(" + nodeTable[a].var_name +" * "+ nodeTable[b].var_name+ ")";
+      return and_id;
+   }
+
+   BDD_ID Manager::or2(BDD_ID a, BDD_ID b){
+      BDD_ID or_id = ite(a, True(), b);
+      auto & or_node = nodeTable[or_id];
+      or_node.var_name = "(" +nodeTable[a].var_name +" + "+ nodeTable[b].var_name + ")";
+      return or_id;
+   }
+
+   BDD_ID Manager::neg(BDD_ID a){
+      BDD_ID neg_id = ite(a, False(), True());
+      auto & neg_node = nodeTable[neg_id];
+      neg_node.var_name = "!" + nodeTable[a].var_name;
+      return neg_id;
+   }
+
+   BDD_ID Manager::xor2(BDD_ID a, BDD_ID b){
+      BDD_ID xor_id = ite(a, neg(b), b);
+      auto & xor_node = nodeTable[xor_id];
+      xor_node.var_name = "(" +nodeTable[a].var_name +" xor "+ nodeTable[b].var_name + ")";
+      return xor_id;
+   }
+
+   BDD_ID Manager::nand2(BDD_ID a, BDD_ID b) 
+   {
+      BDD_ID nand_id = ite(a, neg(b), True());
+      auto & nand_node = nodeTable[nand_id];
+      nand_node.var_name = "(" +nodeTable[a].var_name +" nand "+ nodeTable[b].var_name + ")";
+      return nand_id;
+   }
+
+
+   BDD_ID Manager::nor2(BDD_ID a, BDD_ID b) 
+   {
+      BDD_ID nor_id = ite(a, False(), neg(b));
+      auto & nor_node = nodeTable[nor_id];
+      nor_node.var_name = "(" +nodeTable[a].var_name +" nor "+ nodeTable[b].var_name + ")";
+      return nor_id;
+   }
+
+
+   BDD_ID Manager::xnor2(BDD_ID a, BDD_ID b) 
+   {
+      BDD_ID xnor_id = ite(a, b, neg(b));
+      auto & xnor_node = nodeTable[xnor_id];
+      xnor_node.var_name = "(" +nodeTable[a].var_name +" xnor "+ nodeTable[b].var_name + ")";
+      return xnor_id;
+   }
+
+   void Manager::findNodes(const BDD_ID &root, std::set<BDD_ID> &nodes_of_root){
+      auto & root_node = nodeTable[root];
+      nodes_of_root.insert(root);
+      if(isConstant(root)) return;
+
+      findNodes(root_node.high, nodes_of_root);
+      findNodes(root_node.low, nodes_of_root);
+
+   }
+
+   void Manager::findVars(const BDD_ID &root, std::set<BDD_ID> &vars_of_root){
+      auto & root_node = nodeTable[root];
+      vars_of_root.insert(root_node.top_var);
+      if(isConstant(root)) return;
+
+      findVars(root_node.high, vars_of_root);
+      findVars(root_node.low, vars_of_root);
+   }
+
+
 }
