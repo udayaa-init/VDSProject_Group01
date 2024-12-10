@@ -65,8 +65,8 @@ namespace ClassProject{
 
    BDD_ID Manager::coFactorTrue(BDD_ID f, BDD_ID x) {  
    auto &node = nodeTable[f];
-   if (node.top_var == x) return node.high;
    if (isConstant(f) || isConstant(x) || node.top_var>x) return f;
+   if (node.top_var == x) return node.high;
 
    auto high_part = coFactorTrue(node.high, x);
    auto low_part = coFactorTrue(node.low, x);
@@ -75,11 +75,11 @@ namespace ClassProject{
 
    BDD_ID Manager::coFactorFalse(BDD_ID f, BDD_ID x) {  
    auto &node = nodeTable[f];
-   if (node.top_var == x) return node.low;
    if (isConstant(f) || isConstant(x) || node.top_var>x) return f;
+   if (node.top_var == x) return node.low;
 
-   auto high_part = coFactorTrue(node.high, x);
-   auto low_part = coFactorTrue(node.low, x);
+   auto high_part = coFactorFalse(node.high, x);
+   auto low_part = coFactorFalse(node.low, x);
    return ite(node.top_var, high_part, low_part);
    };
 
@@ -99,14 +99,14 @@ namespace ClassProject{
       // we need to extract the top variable from i,t,e and order them based on the index values(assending) and top variable should not be constant
       std::vector<BDD_ID> x_vars = {topVar(i),topVar(t),topVar(e)};
       std::sort(x_vars.begin(), x_vars.end()); //induces variable ordering
-      for(BDD_ID top_var : x_vars)
-      {
-         if(isConstant(top_var))
-            x_vars.erase(std::remove(x_vars.begin(), x_vars.end(), top_var), x_vars.end());
+      for (auto it = x_vars.begin(); it != x_vars.end(); ) {
+        if (isConstant(*it)) {
+            it = x_vars.erase(it); // Erase the element and update the iterator
+        } else {
+            ++it; // Move to the next element
+        }
       }
-      
       auto & x_node = nodeTable[x_vars.front()];
-
       auto r_high = ite(coFactorTrue(i, x_node.id), coFactorTrue(t, x_node.id),
                   coFactorTrue(e, x_node.id));
       auto r_low = ite(coFactorFalse(i, x_node.id), coFactorFalse(t, x_node.id),
@@ -130,7 +130,7 @@ namespace ClassProject{
     }
 
    BDD_ID Manager::and2(BDD_ID a, BDD_ID b){
-      BDD_ID and_id = ite(a, b, True());
+      BDD_ID and_id = ite(a, b, False());
       auto & and_node = nodeTable[and_id];
       and_node.var_name = "(" + nodeTable[a].var_name +" * "+ nodeTable[b].var_name+ ")";
       return and_id;

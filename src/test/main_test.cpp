@@ -180,7 +180,6 @@ TEST_F(ManagerTest, neg){
     // Setup() in the ManagerTest has already added a,b,c,d to the nodeTable 
     //Now we will call neg() with the ids for the variable b (=3), it will return the id of the newly created node
     BDD_ID newNodeID = manager.neg(3);
-
     //The newly added node should have top variable = b (3), high = False (0), low = True(1);
     EXPECT_EQ(manager.topVar(newNodeID), 3);
     EXPECT_EQ(manager.coFactorTrue(newNodeID), 0);
