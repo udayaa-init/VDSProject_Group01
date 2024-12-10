@@ -263,7 +263,25 @@ TEST_F(ManagerTest, xnor2){
 }
 
 
+TEST_F(ManagerTest, findNodes){
+    std::set<BDD_ID> nodes_a;
+    std::set<BDD_ID> expected_nodes_a = {0, 1, 2};
+    manager.findNodes(2, nodes_a);
+    
+    std::set<BDD_ID> nodes_aorb;
+    std::set<BDD_ID> expected_nodes_aorb = {0, 1, 2, 3, 6};
+    manager.findNodes(manager.or2(2,3),expected_nodes_aorb);
+}
 
+TEST_F(ManagerTest, findVars){
+    std::set<BDD_ID> vars_a;
+    std::set<BDD_ID> expected_vars_a = {2};
+    manager.findNodes(2, vars_a);
+    
+    std::set<BDD_ID> vars_aorb;
+    std::set<BDD_ID> expected_vars_aorb = {2, 3};
+    manager.findNodes(manager.or2(2,3),expected_vars_aorb);
+}
 
 
 int main(int argc, char* argv[])
