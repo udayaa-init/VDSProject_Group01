@@ -128,4 +128,33 @@ namespace ClassProject{
       return createVar("ite( " + x.var_name + ", " +te +")",x.id, r_high, r_low);
 
     }
+
+   BDD_ID Manager::and2(BDD_ID a, BDD_ID b){
+      BDD_ID and_id = ite(a, b, True());
+      auto & and_node = nodeTable[and_id];
+      and_node.var_name = "(" + nodeTable[a].var_name +" * "+ nodeTable[b].var_name+ ")";
+      return and_id;
+   }
+
+   BDD_ID Manager::or2(BDD_ID a, BDD_ID b){
+      BDD_ID or_id = ite(a, True(), b);
+      auto & or_node = nodeTable[or_id];
+      or_node.var_name = "(" +nodeTable[a].var_name +" + "+ nodeTable[b].var_name + ")";
+      return or_id;
+   }
+
+   BDD_ID Manager::neg(BDD_ID a){
+      BDD_ID neg_id = ite(a, False(), True());
+      auto & neg_node = nodeTable[neg_id];
+      neg_node.var_name = "!" + nodeTable[a].var_name;
+      return neg_id;
+   }
+
+   BDD_ID Manager::xor2(BDD_ID a, BDD_ID b){
+      BDD_ID xor_id = ite(a, neg(b), b);
+      auto & xor_node = nodeTable[xor_id];
+      xor_node.var_name = "(" +nodeTable[a].var_name +" xor "+ nodeTable[b].var_name + ")";
+      return xor_id;
+   }
+
 }

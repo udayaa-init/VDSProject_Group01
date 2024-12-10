@@ -54,13 +54,13 @@ namespace ClassProject {
 
             BDD_ID coFactorFalse(BDD_ID f) override;
 
-            BDD_ID and2(BDD_ID a, BDD_ID b) override {return 0;};
+            BDD_ID and2(BDD_ID a, BDD_ID b) override ;
 
-            BDD_ID or2(BDD_ID a, BDD_ID b) override {return 0;};
+            BDD_ID or2(BDD_ID a, BDD_ID b) override;
 
-            BDD_ID xor2(BDD_ID a, BDD_ID b) override {return 0;};
+            BDD_ID xor2(BDD_ID a, BDD_ID b) override ;
 
-            BDD_ID neg(BDD_ID a) override {return 0;};
+            BDD_ID neg(BDD_ID a) override ;
 
             BDD_ID nand2(BDD_ID a, BDD_ID b) override {return 0;};
 
