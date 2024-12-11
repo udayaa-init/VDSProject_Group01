@@ -294,21 +294,40 @@ TEST_F(ManagerTest, findNodes){
     std::set<BDD_ID> nodes_a;
     std::set<BDD_ID> expected_nodes_a = {manager.False(), manager.True(), a_id};
     manager.findNodes(a_id, nodes_a);
+    EXPECT_EQ(nodes_a, expected_nodes_a);
     
     std::set<BDD_ID> nodes_aorb;
     BDD_ID aorb_id = manager.or2(a_id,b_id);
-    std::set<BDD_ID> expected_nodes_aorb = {manager.False(), manager.True(), a_id, b_id, aorb_id};
-    manager.findNodes(aorb_id,expected_nodes_aorb);
+    std::set<BDD_ID> expected_nodes_aorb = {manager.False(), manager.True(), b_id, aorb_id};
+    manager.findNodes(aorb_id, nodes_aorb);
+    EXPECT_EQ(nodes_aorb, expected_nodes_aorb);
 }
 
 TEST_F(ManagerTest, findVars){
     std::set<BDD_ID> vars_a;
     std::set<BDD_ID> expected_vars_a = {a_id};
-    manager.findNodes(a_id, vars_a);
+    manager.findVars(a_id, vars_a);
+    EXPECT_EQ(vars_a, expected_vars_a);
     
     std::set<BDD_ID> vars_aorb;
+    BDD_ID aorb_id = manager.or2(a_id,b_id);
     std::set<BDD_ID> expected_vars_aorb = {a_id, b_id};
-    manager.findNodes(manager.or2(a_id, b_id),expected_vars_aorb);
+    manager.findVars(aorb_id, vars_aorb);
+    EXPECT_EQ(vars_aorb, expected_vars_aorb);
+
+}
+
+// FEEDBACK: Failing Test
+TEST_F(ManagerTest, CoFactorTrueTest)
+{
+    //f1 = (a+b)*c*d
+    SetExample();
+
+    EXPECT_EQ(manager.coFactorTrue(f_id, a_id), candd_id);
+    EXPECT_EQ(manager.coFactorTrue(f_id, a_id), manager.coFactorTrue(f_id));
+    EXPECT_EQ(manager.coFactorTrue(f_id, b_id), candd_id);
+    EXPECT_EQ(manager.coFactorTrue(f_id, c_id), manager.and2(d_id, aorb_id));
+    EXPECT_EQ(manager.coFactorTrue(f_id, d_id), manager.and2(c_id, aorb_id));
 }
 
 
