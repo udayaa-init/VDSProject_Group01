@@ -122,7 +122,7 @@ namespace ClassProject{
     BDD_ID Manager::find_or_add_unique_table(Node& x, BDD_ID r_low, BDD_ID r_high, std::string te){
       //Eliminate isomorphic 
       auto iso = std::find_if(nodeTable.begin(), nodeTable.end(), [&](Node& node) { // all variable in the outer scope can be accessed and referencing than copying
-                               return node.id == x.id && node.high == r_high && node.low == r_low; });
+                               return  node.high == r_high && node.low == r_low; }); //node.id == x.id &&
       if(iso != nodeTable.end()) return iso->id;
       //create and add the node
       return createVar("ite( " + x.var_name + ", " +te +")",x.id, r_high, r_low);
