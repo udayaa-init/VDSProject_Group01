@@ -8,11 +8,13 @@
 #include <string>
 #include <set>
 
-namespace ClassProject {
+namespace ClassProject
+{
 
     typedef size_t BDD_ID;
 
-    class ManagerInterface {
+    class ManagerInterface
+    {
     public:
         virtual BDD_ID createVar(const std::string &label) = 0;
 
