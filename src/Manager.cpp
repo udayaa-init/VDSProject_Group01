@@ -20,6 +20,12 @@ namespace ClassProject
       return nodeTable[nodeTable.size() - 1].id;
    }
 
+   BDD_ID Manager::createNode(const std::string &label, const BDD_ID &top, const BDD_ID &high, const BDD_ID &low)
+   {
+      nodeTable.emplace_back(Node(nodeTable.size(), top, high, low, label));
+      return nodeTable[nodeTable.size() - 1].id;
+   }
+
    const BDD_ID &Manager::True()
    {
       return nodeTable[1].id;
@@ -35,6 +41,7 @@ namespace ClassProject
    bool Manager::isConstant(BDD_ID f)
    {
       auto &refNode = nodeTable[f];
+      std::cout << refNode.id << refNode.high << refNode.low << refNode.top_var;
       return (refNode.id == refNode.high) && (refNode.id == refNode.low) && (refNode.id == refNode.top_var);
    }
 
@@ -137,7 +144,7 @@ namespace ClassProject
       if (iso != nodeTable.end())
          return iso->id;
       // create and add the node
-      return createVar("ite( " + x.var_name + ", " + te + ")", x.id, r_high, r_low);
+      return createNode("ite( " + x.var_name + ", " + te + ")", x.id, r_high, r_low);
    }
 
    BDD_ID Manager::and2(BDD_ID a, BDD_ID b)

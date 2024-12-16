@@ -19,8 +19,7 @@ namespace ClassProject
         BDD_ID id;
         std::string var_name;
 
-        // Constructor (optional if aggregate initialization is enough)
-        Node(int id, int topVar, int high, int low, std::string var_name)
+        Node(int id, int top_var, int high, int low, std::string var_name)
             : id(id), top_var(top_var), high(high), low(low), var_name(var_name) {}
     };
     class Manager : public ManagerInterface
@@ -33,8 +32,8 @@ namespace ClassProject
 
         BDD_ID createVar(const std::string &label) override;
 
-        BDD_ID createVar(const std::string &label, const BDD_ID &top,
-                         const BDD_ID &high, const BDD_ID &low);
+        BDD_ID createNode(const std::string &label, const BDD_ID &top,
+                          const BDD_ID &high, const BDD_ID &low);
 
         // Adding place holder to compile it
         const BDD_ID &True() override;
