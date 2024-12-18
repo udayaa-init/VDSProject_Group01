@@ -206,7 +206,8 @@ namespace ClassProject
    void Manager::findNodes(const BDD_ID &root, std::set<BDD_ID> &nodes_of_root)
    {
       auto &root_node = nodeTable[root];
-      nodes_of_root.insert(root);
+      auto res = nodes_of_root.insert(root);
+      if(!res.second) return;
       if (isConstant(root))
          return;
 
@@ -220,8 +221,8 @@ namespace ClassProject
          return;
 
       auto &root_node = nodeTable[root];
-      vars_of_root.insert(root_node.top_var);
-
+      auto res = vars_of_root.insert(root_node.top_var);
+      if(!res.second) return;
       findVars(root_node.high, vars_of_root);
       findVars(root_node.low, vars_of_root);
    }
