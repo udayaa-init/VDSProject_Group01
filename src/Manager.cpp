@@ -122,29 +122,30 @@ namespace ClassProject
          }
       }
       auto &x_node = nodeTable[x_vars.front()];
-      auto r_high = ite(coFactorTrue(i, x_node.id), coFactorTrue(t, x_node.id),
-                        coFactorTrue(e, x_node.id));
-      auto r_low = ite(coFactorFalse(i, x_node.id), coFactorFalse(t, x_node.id),
-                       coFactorFalse(e, x_node.id));
+      BDD_ID x_id = x_node.id;
+      auto r_high = ite(coFactorTrue(i, x_id), coFactorTrue(t, x_id),
+                        coFactorTrue(e, x_id));
+      auto r_low = ite(coFactorFalse(i, x_id), coFactorFalse(t, x_id),
+                       coFactorFalse(e, x_id));
 
       if (r_high == r_low)
          return r_high;
 
-      auto r = find_or_add_unique_table(x_node, r_low, r_high, nodeTable[t].var_name + " , " + nodeTable[e].var_name);
+      auto r = find_or_add_unique_table(x_id, r_low, r_high, nodeTable[t].var_name + " , " + nodeTable[e].var_name);
 
       return r;
    }
 
-   BDD_ID Manager::find_or_add_unique_table(Node &x, BDD_ID r_low, BDD_ID r_high, std::string te)
+   BDD_ID Manager::find_or_add_unique_table(BDD_ID xid, BDD_ID r_low, BDD_ID r_high, std::string te)
    {
       // Eliminate isomorphic
       auto iso = std::find_if(nodeTable.begin(), nodeTable.end(), [&](Node &node) { // all variable in the outer scope can be accessed and referencing than copying
-         return node.top_var == x.id && node.high == r_high && node.low == r_low;
+         return node.top_var == xid && node.high == r_high && node.low == r_low;
       }); // node.id == x.id &&
       if (iso != nodeTable.end())
          return iso->id;
       // create and add the node
-      return createNode("ite( " + x.var_name + ", " + te + ")", x.id, r_high, r_low);
+      return createNode("ite( " + std::to_string(xid) + ", " + te + ")", xid, r_high, r_low);
    }
 
    BDD_ID Manager::and2(BDD_ID a, BDD_ID b)
