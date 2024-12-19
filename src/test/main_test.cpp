@@ -19,6 +19,7 @@ protected:
 
     BDD_ID aorb_id;
     BDD_ID candd_id;
+    BDD_ID f_low_id;
     BDD_ID f_id;
 
     // Sets up ID 2-5
@@ -35,6 +36,7 @@ protected:
     {
         aorb_id = manager.or2(a_id, b_id);
         candd_id = manager.and2(c_id, d_id);
+        f_low_id = manager.and2(b_id,candd_id);
         f_id = manager.and2(aorb_id, candd_id);
     }
 };
@@ -125,7 +127,7 @@ TEST_F(ManagerTest, ExistingcoFactorFalse)
     EXPECT_EQ(manager.coFactorFalse(d_id), manager.False());
     EXPECT_EQ(manager.coFactorFalse(aorb_id), b_id);
     EXPECT_EQ(manager.coFactorFalse(candd_id), manager.False());
-    EXPECT_EQ(manager.coFactorFalse(f_id), f_id - 1);
+    EXPECT_EQ(manager.coFactorFalse(f_id), f_low_id);
 }
 
 TEST_F(ManagerTest, ExistingcoFactorTrue)
@@ -184,20 +186,22 @@ TEST_F(ManagerTest, coFactorANDiteExampleTest)
     // f = (a + b) ∗c ∗d
 
     // (a + b)
-    BDD_ID aorb_id = manager.ite(a_id, manager.True(), b_id);
+    BDD_ID a_or_b_id = manager.ite(a_id, manager.True(), b_id);
     // c * d
-    BDD_ID candd_id = manager.ite(c_id, d_id, manager.False());
+    BDD_ID c_and_d_id = manager.ite(c_id, d_id, manager.False());
     // (a + b) ∗c ∗d
     BDD_ID f_id = manager.ite(aorb_id, candd_id, manager.False());
+    // get id for intermediate node b ∗c ∗d
+    BDD_ID b_and_c_and_d_id = manager.ite(b_id, candd_id, manager.False());
 
     // Verfying the resultant tree
-    EXPECT_EQ(manager.coFactorFalse(aorb_id), b_id);
-    EXPECT_EQ(manager.coFactorFalse(candd_id), manager.False());
-    EXPECT_EQ(manager.coFactorFalse(f_id), f_id - 1);
+    EXPECT_EQ(manager.coFactorFalse(a_or_b_id), b_id);
+    EXPECT_EQ(manager.coFactorFalse(c_and_d_id), manager.False());
+    EXPECT_EQ(manager.coFactorFalse(f_id), b_and_c_and_d_id);
 
-    EXPECT_EQ(manager.coFactorTrue(aorb_id), manager.True());
-    EXPECT_EQ(manager.coFactorTrue(candd_id), d_id);
-    EXPECT_EQ(manager.coFactorTrue(f_id), candd_id);
+    EXPECT_EQ(manager.coFactorTrue(a_or_b_id), manager.True());
+    EXPECT_EQ(manager.coFactorTrue(c_and_d_id), d_id);
+    EXPECT_EQ(manager.coFactorTrue(f_id), c_and_d_id);
 }
 
 TEST_F(ManagerTest, and2)
@@ -242,16 +246,20 @@ TEST_F(ManagerTest, nor2)
     // Now we will call nor2() with the ids for the variables a (=2) and b (=3), it will return the id of the newly created node
     BDD_ID newNodeID = manager.nor2(a_id, b_id);
 
+    // get the id for the intermidiate node b_not
+    BDD_ID b_not_id = manager.neg(b_id);
+
     // The newly added node should have top variable = a (2), high = False (0), low = b_not (6);
     EXPECT_EQ(manager.topVar(newNodeID), a_id);
     EXPECT_EQ(manager.coFactorTrue(newNodeID), manager.False());
-    EXPECT_EQ(manager.coFactorFalse(newNodeID), (newNodeID - 1));
+    EXPECT_EQ(manager.coFactorFalse(newNodeID), b_not_id);
 
     // A new node for b_not should also be created
-    EXPECT_EQ(manager.topVar(newNodeID - 1), b_id);
-    EXPECT_EQ(manager.coFactorTrue(newNodeID - 1), manager.False());
-    EXPECT_EQ(manager.coFactorFalse(newNodeID - 1), manager.True());
+    EXPECT_EQ(manager.topVar(b_not_id), b_id);
+    EXPECT_EQ(manager.coFactorTrue(b_not_id), manager.False());
+    EXPECT_EQ(manager.coFactorFalse(b_not_id), manager.True());
 }
+
 
 TEST_F(ManagerTest, nand2)
 {
@@ -259,15 +267,18 @@ TEST_F(ManagerTest, nand2)
     // Now we will call nand2() with the ids for the variables a (=2) and b (=3), it will return the id of the newly created node
     BDD_ID newNodeID = manager.nand2(a_id, b_id);
 
+    // get the id for the intermidiate node b_not
+    BDD_ID b_not_id = manager.neg(b_id);
+
     // The newly added node should have top variable = a (2), high = b_not (6), low = True (1);
     EXPECT_EQ(manager.topVar(newNodeID), a_id);
-    EXPECT_EQ(manager.coFactorTrue(newNodeID), (newNodeID - 1));
+    EXPECT_EQ(manager.coFactorTrue(newNodeID), b_not_id);
     EXPECT_EQ(manager.coFactorFalse(newNodeID), manager.True());
 
     // A new node for b_not should also be created
-    EXPECT_EQ(manager.topVar(newNodeID - 1), b_id);
-    EXPECT_EQ(manager.coFactorTrue(newNodeID - 1), manager.False());
-    EXPECT_EQ(manager.coFactorFalse(newNodeID - 1), manager.True());
+    EXPECT_EQ(manager.topVar(b_not_id), b_id);
+    EXPECT_EQ(manager.coFactorTrue(b_not_id), manager.False());
+    EXPECT_EQ(manager.coFactorFalse(b_not_id), manager.True());
 }
 
 TEST_F(ManagerTest, xor2)
@@ -276,15 +287,18 @@ TEST_F(ManagerTest, xor2)
     // Now we will call nand2() with the ids for the variables a (=2) and b (=3), it will return the id of the newly created node
     BDD_ID newNodeID = manager.xor2(a_id, b_id);
 
+    // get the id for the intermidiate node b_not
+    BDD_ID b_not_id = manager.neg(b_id);
+
     // The newly added node should have top variable = a (2), high = b_not (6), low = b (3);
     EXPECT_EQ(manager.topVar(newNodeID), a_id);
-    EXPECT_EQ(manager.coFactorTrue(newNodeID), (newNodeID - 1));
+    EXPECT_EQ(manager.coFactorTrue(newNodeID), b_not_id);
     EXPECT_EQ(manager.coFactorFalse(newNodeID), b_id);
 
     // A new node for b_not should also be created
-    EXPECT_EQ(manager.topVar(newNodeID - 1), b_id);
-    EXPECT_EQ(manager.coFactorTrue(newNodeID - 1), manager.False());
-    EXPECT_EQ(manager.coFactorFalse(newNodeID - 1), manager.True());
+    EXPECT_EQ(manager.topVar(b_not_id), b_id);
+    EXPECT_EQ(manager.coFactorTrue(b_not_id), manager.False());
+    EXPECT_EQ(manager.coFactorFalse(b_not_id), manager.True());
 }
 
 TEST_F(ManagerTest, xnor2)
@@ -293,15 +307,19 @@ TEST_F(ManagerTest, xnor2)
     // Now we will call nand2() with the ids for the variables a (=2) and b (=3), it will return the id of the newly created node
     BDD_ID newNodeID = manager.xnor2(a_id, b_id);
 
+    // get the id for the intermidiate node b_not
+    BDD_ID b_not_id = manager.neg(b_id);
+
     // The newly added node should have top variable = a (2), high = b (3), low = b_not(6);
     EXPECT_EQ(manager.topVar(newNodeID), a_id);
     EXPECT_EQ(manager.coFactorTrue(newNodeID), b_id);
-    EXPECT_EQ(manager.coFactorFalse(newNodeID), (newNodeID - 1));
+    EXPECT_EQ(manager.coFactorFalse(newNodeID), b_not_id);
 
-    // A new node for b_not should also be created
-    EXPECT_EQ(manager.topVar(newNodeID - 1), b_id);
-    EXPECT_EQ(manager.coFactorTrue(newNodeID - 1), manager.False());
-    EXPECT_EQ(manager.coFactorFalse(newNodeID - 1), manager.True());
+     // A new node for b_not should also be created
+    EXPECT_EQ(manager.topVar(b_not_id), b_id);
+    EXPECT_EQ(manager.coFactorTrue(b_not_id), manager.False());
+    EXPECT_EQ(manager.coFactorFalse(b_not_id), manager.True());
+
 }
 
 TEST_F(ManagerTest, findNodes)
