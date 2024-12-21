@@ -166,7 +166,7 @@ namespace ClassProject
    {
       BDD_ID and_id = ite(a, b, False());
       auto &and_node = nodeTable[and_id];
-      and_node.var_name = "(" + nodeTable[a].var_name + " * " + nodeTable[b].var_name + ")";
+      // and_node.var_name = "" + and_id;
       return and_id;
    }
 
@@ -174,7 +174,7 @@ namespace ClassProject
    {
       BDD_ID or_id = ite(a, True(), b);
       auto &or_node = nodeTable[or_id];
-      or_node.var_name = "(" + nodeTable[a].var_name + " + " + nodeTable[b].var_name + ")";
+      // or_node.var_name = "" + or_id;
       return or_id;
    }
 
@@ -182,7 +182,7 @@ namespace ClassProject
    {
       BDD_ID neg_id = ite(a, False(), True());
       auto &neg_node = nodeTable[neg_id];
-      neg_node.var_name = "!" + nodeTable[a].var_name;
+      // neg_node.var_name = "" + neg_id;
       return neg_id;
    }
 
@@ -190,7 +190,7 @@ namespace ClassProject
    {
       BDD_ID xor_id = ite(a, neg(b), b);
       auto &xor_node = nodeTable[xor_id];
-      xor_node.var_name = "(" + nodeTable[a].var_name + " xor " + nodeTable[b].var_name + ")";
+      // xor_node.var_name = "" + xor_id;
       return xor_id;
    }
 
@@ -198,7 +198,7 @@ namespace ClassProject
    {
       BDD_ID nand_id = ite(a, neg(b), True());
       auto &nand_node = nodeTable[nand_id];
-      nand_node.var_name = "(" + nodeTable[a].var_name + " nand " + nodeTable[b].var_name + ")";
+      // nand_node.var_name = "" + nand_id;
       return nand_id;
    }
 
@@ -206,7 +206,7 @@ namespace ClassProject
    {
       BDD_ID nor_id = ite(a, False(), neg(b));
       auto &nor_node = nodeTable[nor_id];
-      nor_node.var_name = "(" + nodeTable[a].var_name + " nor " + nodeTable[b].var_name + ")";
+      // nor_node.var_name = "" + nor_id;
       return nor_id;
    }
 
@@ -214,7 +214,7 @@ namespace ClassProject
    {
       BDD_ID xnor_id = ite(a, b, neg(b));
       auto &xnor_node = nodeTable[xnor_id];
-      xnor_node.var_name = "(" + nodeTable[a].var_name + " xnor " + nodeTable[b].var_name + ")";
+      // xnor_node.var_name = "" + xnor_id;
       return xnor_id;
    }
 
