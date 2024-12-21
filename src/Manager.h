@@ -7,10 +7,13 @@
 
 #include <vector>
 #include <string>
+#include <unordered_map>
+#include <boost/functional/hash.hpp>
 #include "ManagerInterface.h"
 
 namespace ClassProject
 {
+    typedef std::tuple<BDD_ID, BDD_ID, BDD_ID> key;
     struct Node
     {
         BDD_ID high;
@@ -22,11 +25,26 @@ namespace ClassProject
         Node(int id, int top_var, int high, int low, std::string var_name)
             : id(id), top_var(top_var), high(high), low(low), var_name(var_name) {}
     };
+    
+    struct Hasher {
+        std::size_t operator()(const key& key) const {
+        std::size_t hash_key = 0;
+
+        boost::hash_combine(hash_key, boost::hash_value(std::get<0>(key)));
+        boost::hash_combine(hash_key, boost::hash_value(std::get<1>(key)));
+        boost::hash_combine(hash_key, boost::hash_value(std::get<2>(key)));
+
+        return hash_key;
+        }
+    };
+
     class Manager : public ManagerInterface
     {
     private:
         std::vector<Node> nodeTable;
-
+       
+        std::unordered_map<key, BDD_ID, Hasher> uniqueTable;
+        std::unordered_map<key, BDD_ID, Hasher> computeTable;
     public:
         Manager();
 

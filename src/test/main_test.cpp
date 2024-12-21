@@ -159,12 +159,13 @@ TEST_F(ManagerTest, iteTerminalCase)
 
 TEST_F(ManagerTest, coFactorTrueTerminalCase)
 {
+    SetExample();
     // f is constant
     EXPECT_EQ(manager.coFactorTrue(manager.True(), a_id), manager.True());
     // x is constant
     EXPECT_EQ(manager.coFactorTrue(f_id, manager.True()), f_id);
     // x is the top var for f
-    EXPECT_EQ(manager.coFactorTrue(f_id, a_id), f_id);
+    EXPECT_EQ(manager.coFactorTrue(f_id, a_id), candd_id);
     // f doesnt depend on x
     EXPECT_EQ(manager.coFactorTrue(candd_id, a_id), candd_id);
 }

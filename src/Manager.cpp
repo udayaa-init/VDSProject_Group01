@@ -9,21 +9,28 @@ namespace ClassProject
    {
       // Add Constant False
       nodeTable.emplace_back(Node(0, 0, 0, 0, "False"));
-
+      auto node = nodeTable.back();
+      uniqueTable[std::make_tuple(node.top_var, node.high, node.low)] = 0;
       // Add Constant True
       nodeTable.emplace_back(Node(1, 1, 1, 1, "True"));
+      node = nodeTable.back();
+      uniqueTable[std::make_tuple(node.top_var, node.high, node.low)] = node.id;
    }
 
    BDD_ID Manager::createVar(const std::string &label)
    {
       nodeTable.emplace_back(Node(nodeTable.size(), nodeTable.size(), 1, 0, label));
-      return nodeTable[nodeTable.size() - 1].id;
+      auto node = nodeTable.back();
+      uniqueTable[std::make_tuple(node.top_var, node.high, node.low)] = node.id;
+      return node.id;
    }
 
    BDD_ID Manager::createNode(const std::string &label, const BDD_ID &top, const BDD_ID &high, const BDD_ID &low)
    {
       nodeTable.emplace_back(Node(nodeTable.size(), top, high, low, label));
-      return nodeTable[nodeTable.size() - 1].id;
+      auto node = nodeTable.back();
+      uniqueTable[std::make_tuple(top, high, low)] = node.id;
+      return node.id;
    }
 
    const BDD_ID &Manager::True()
@@ -41,7 +48,6 @@ namespace ClassProject
    bool Manager::isConstant(BDD_ID f)
    {
       auto &refNode = nodeTable[f];
-      std::cout << refNode.id << refNode.high << refNode.low << refNode.top_var;
       return (refNode.id == refNode.high) && (refNode.id == refNode.low) && (refNode.id == refNode.top_var);
    }
 
@@ -70,7 +76,6 @@ namespace ClassProject
          return f;
       if (node.top_var == x)
          return node.high;
-
       auto high_part = coFactorTrue(node.high, x);
       auto low_part = coFactorTrue(node.low, x);
       return ite(node.top_var, high_part, low_part);
@@ -105,7 +110,10 @@ namespace ClassProject
          return i; // function variable
 
       // we have not added the computed_table
-
+      key ite_key = std::make_tuple(i,t,e);
+      if (computeTable.find(ite_key) != computeTable.end()) {
+         return computeTable[ite_key];
+      }
       // x be the top-varaible of (i,t,e)
       // we need to extract the top variable from i,t,e and order them based on the index values(assending) and top variable should not be constant
       std::vector<BDD_ID> x_vars = {topVar(i), topVar(t), topVar(e)};
@@ -132,18 +140,24 @@ namespace ClassProject
          return r_high;
 
       auto r = find_or_add_unique_table(x_id, r_low, r_high, nodeTable[t].var_name + " , " + nodeTable[e].var_name);
-
+      computeTable[ite_key] = r;
       return r;
    }
 
    BDD_ID Manager::find_or_add_unique_table(BDD_ID xid, BDD_ID r_low, BDD_ID r_high, std::string te)
    {
       // Eliminate isomorphic
-      auto iso = std::find_if(nodeTable.begin(), nodeTable.end(), [&](Node &node) { // all variable in the outer scope can be accessed and referencing than copying
-         return node.top_var == xid && node.high == r_high && node.low == r_low;
-      }); // node.id == x.id &&
-      if (iso != nodeTable.end())
-         return iso->id;
+      // auto iso = std::find_if(nodeTable.begin(), nodeTable.end(), [&](Node &node) { // all variable in the outer scope can be accessed and referencing than copying
+      //    return node.top_var == xid && node.high == r_high && node.low == r_low;
+      // }); // node.id == x.id &&
+      // if (iso != nodeTable.end())
+      //    return iso->id;
+      key vgh_tup = std::make_tuple(xid, r_high, r_low);
+
+      if(uniqueTable.find(vgh_tup)!= uniqueTable.end()){
+         computeTable[vgh_tup] = uniqueTable[vgh_tup];
+         return uniqueTable[vgh_tup];
+      }
       // create and add the node
       return createNode("ite( " + std::to_string(xid) + ", " + te + ")", xid, r_high, r_low);
    }
