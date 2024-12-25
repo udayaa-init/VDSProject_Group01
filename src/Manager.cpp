@@ -139,7 +139,7 @@ namespace ClassProject
       if (r_high == r_low)
          return r_high;
 
-      auto r = find_or_add_unique_table(x_id, r_low, r_high, nodeTable[t].var_name + " , " + nodeTable[e].var_name);
+      auto r = find_or_add_unique_table(x_id, r_low, r_high, "");
       computeTable[ite_key] = r;
       return r;
    }
@@ -159,7 +159,7 @@ namespace ClassProject
          return uniqueTable[vgh_tup];
       }
       // create and add the node
-      return createNode("ite( " + std::to_string(xid) + ", " + te + ")", xid, r_high, r_low);
+      return createNode("", xid, r_high, r_low);
    }
 
    BDD_ID Manager::and2(BDD_ID a, BDD_ID b)
