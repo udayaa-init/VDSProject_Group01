@@ -10,18 +10,19 @@ namespace ClassProject
       // Add Constant False
       nodeTable.emplace_back(Node(0, 0, 0, 0, "False"));
       auto node = nodeTable.back();
-      uniqueTable[std::make_tuple(node.top_var, node.high, node.low)] = 0;
+      insertUniqueTable(std::make_tuple(node.top_var, node.high, node.low), node.id);
+
       // Add Constant True
       nodeTable.emplace_back(Node(1, 1, 1, 1, "True"));
       node = nodeTable.back();
-      uniqueTable[std::make_tuple(node.top_var, node.high, node.low)] = node.id;
+      insertUniqueTable(std::make_tuple(node.top_var, node.high, node.low), node.id);
    }
 
    BDD_ID Manager::createVar(const std::string &label)
    {
       nodeTable.emplace_back(Node(nodeTable.size(), nodeTable.size(), 1, 0, label));
       auto node = nodeTable.back();
-      uniqueTable[std::make_tuple(node.top_var, node.high, node.low)] = node.id;
+      insertUniqueTable(std::make_tuple(node.top_var, node.high, node.low), node.id);
       return node.id;
    }
 
@@ -29,7 +30,7 @@ namespace ClassProject
    {
       nodeTable.emplace_back(Node(nodeTable.size(), top, high, low, label));
       auto node = nodeTable.back();
-      uniqueTable[std::make_tuple(top, high, low)] = node.id;
+      insertUniqueTable(std::make_tuple(node.top_var, node.high, node.low), node.id);
       return node.id;
    }
 
@@ -109,10 +110,13 @@ namespace ClassProject
       if (t == True() && e == False())
          return i; // function variable
 
+      
       // we have not added the computed_table
-      key ite_key = std::make_tuple(i,t,e);
-      if (computeTable.find(ite_key) != computeTable.end()) {
-         return computeTable[ite_key];
+      key ite_key = std::make_tuple(i, t, e);
+      std::optional<BDD_ID> ite_value = findComputeTable(ite_key);
+      if (ite_value.has_value())
+      {
+         return ite_value.value();
       }
       // x be the top-varaible of (i,t,e)
       // we need to extract the top variable from i,t,e and order them based on the index values(assending) and top variable should not be constant
@@ -140,7 +144,7 @@ namespace ClassProject
          return r_high;
 
       auto r = find_or_add_unique_table(x_id, r_low, r_high, "");
-      computeTable[ite_key] = r;
+      insertComputeTable(ite_key, r);
       return r;
    }
 
@@ -154,10 +158,13 @@ namespace ClassProject
       //    return iso->id;
       key vgh_tup = std::make_tuple(xid, r_high, r_low);
 
-      if(uniqueTable.find(vgh_tup)!= uniqueTable.end()){
-         computeTable[vgh_tup] = uniqueTable[vgh_tup];
-         return uniqueTable[vgh_tup];
+      std::optional<BDD_ID> vgh_value = findUniqueTable(vgh_tup);
+      if (vgh_value.has_value())
+      {
+         insertComputeTable(vgh_tup, vgh_value.value());
+         return vgh_value.value();
       }
+
       // create and add the node
       return createNode("", xid, r_high, r_low);
    }
@@ -222,7 +229,8 @@ namespace ClassProject
    {
       auto &root_node = nodeTable[root];
       auto res = nodes_of_root.insert(root);
-      if(!res.second) return;
+      if (!res.second)
+         return;
       if (isConstant(root))
          return;
 
@@ -237,7 +245,8 @@ namespace ClassProject
 
       auto &root_node = nodeTable[root];
       auto res = vars_of_root.insert(root_node.top_var);
-      if(!res.second) return;
+      if (!res.second)
+         return;
       findVars(root_node.high, vars_of_root);
       findVars(root_node.low, vars_of_root);
    }
