@@ -3,3 +3,12 @@ build/
 Testing/
 .vscode/
 doxygen/
+results_c17/
+results_c432/
+results_c499/
+results_c880/
+results_c1355/
+results_c1908/
+results_c3540/
+results_c2670/
+results_c5315/
