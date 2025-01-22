@@ -32,6 +32,9 @@ namespace ClassProject {
 
     void setInitState(const std::vector<bool> &stateVector) override;
 
+    const std::vector<bool> getInitState();
+    BDD_ID characteristicFunction(std::vector<BDD_ID>, std::vector<BDD_ID>);
+    BDD_ID existentialQuantification(const BDD_ID&, const std::vector<BDD_ID>&);
    };
 
 }
