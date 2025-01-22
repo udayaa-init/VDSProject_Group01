@@ -13,8 +13,8 @@ namespace ClassProject{
             throw std::runtime_error(" !!!!!stateSize must be greater than zero !!!!!!");
         // create current state, next state, and input variables
         for (unsigned int i = 0; i < stateSize; i++) {
-            transitionFunctions[i] = states[i] = createVar(std::to_string(i));
-            nextStates[i] = createVar(std::to_string(i));
+            transitionFunctions[i] = states[i] = createVar(std::to_string(i)); // just like creating s1,s2,s3,...
+            nextStates[i] = createVar(std::to_string(i)); // just like creating r1,r2,r3,... and rest of the BDDs will be based on manipualting for these basic varaibles
         }
 
         for (unsigned int i = 0; i < inputSize; i++) {
@@ -62,15 +62,17 @@ namespace ClassProject{
         //fixed point interation 
         do{
             cr = cr_it;
-            nxtImg = existentialQuantification(existentialQuantification(and2(tau,cr), states), inputs); // Image in terms of the next state
+            nxtImg = existentialQuantification(existentialQuantification(and2(tau,cr), states), inputs); // Image in terms of the next state r1,r2,r3...
 
             // remane the next state to present state.
             Img = True();
             for(int i=0; i<states.size(); i++){
+               //  (we xnor the states and images (s1 xnor r1)(s2 xnor r2)(s3 xnor r3)...)
+            //Xnoring and adding gives us all the variables interms of s1s2 and !s1!s2 and there anded paris with other variables.eg. s1s2r1r2 + s1r1!s2!r2+ !s1!r1s2r2 + !s1!r1!s2!r2 that's all we need
                 Img = this->and2(Img, this->xnor2(this->states[i], this->nextStates[i]));
             }
-            //Img = existentialQuantification(Img, nextStates); // current state in Img can be in terms of inputs
-            Img = existentialQuantification(existentialQuantification(and2(Img, nxtImg), nextStates),inputs);
+            //Img = existentialQuantification(Img, nextStates); //// We need image in terms of the s1,s2,s3... here Img here( so we xnor the states and images (s1 xnor r1)(s2 xnor r2)(s3 xnor r3)...)
+            Img = existentialQuantification(and2(Img, nxtImg), nextStates); // We anded both img and nextImg and removed the next state. so we all have img in term of s1,s22,s3...// existentialQuantification(existentialQuantification(and2(Img, nxtImg), nextStates),inputs);
             cr_it = or2(cr, Img);
             distance ++;
 
@@ -118,11 +120,11 @@ namespace ClassProject{
          return initalState;
     }
 
-    BDD_ID Reachability::characteristicFunction(std::vector<BDD_ID> equations, std::vector<BDD_ID> variables)
+    BDD_ID Reachability::characteristicFunction(std::vector<BDD_ID> f1, std::vector<BDD_ID> f2)
     {
         BDD_ID fn = True();
-        for(int i=0; i<equations.size(); i++){
-            fn = and2( fn, xnor2(variables[i], equations[i]));
+        for(int i=0; i<f1.size(); i++){
+            fn = and2( fn, xnor2(f1[i], f2[i]));
         }
         return fn;
     }
