@@ -2,16 +2,16 @@
 #include <iostream>
 namespace ClassProject{
 
-    Reachability::Reachability(unsigned int stateSize, unsigned int inputSize): 
-      states(stateSize, 0),
-      inputs(inputSize, 0),
-      nextStates(stateSize, 0),
-      initState(stateSize, 0),
-      transitionFunctions(stateSize, 0),
+    Reachability::Reachability(int stateSize, int inputSize):
       ReachabilityInterface::ReachabilityInterface(stateSize, inputSize){
-        if(stateSize <= 0)
-            throw std::runtime_error(" !!!!!stateSize must be greater than zero !!!!!!");
+        if(stateSize <= 0 || inputSize<0)
+            throw std::runtime_error(" !!!!!stateSize must be greater than zero or or inputSize must be greater than or equal to zero!!!!!!");
         // create current state, next state, and input variables
+        states = std::vector<BDD_ID>(stateSize, 0);
+        inputs = std::vector<BDD_ID>(inputSize, 0);
+        nextStates = std::vector<BDD_ID>(stateSize, 0);
+        initState = std::vector<BDD_ID>(stateSize, 0);
+        transitionFunctions = std::vector<BDD_ID>(stateSize, 0);
         for (unsigned int i = 0; i < stateSize; i++) {
             transitionFunctions[i] = states[i] = createVar(std::to_string(i)); // just like creating s1,s2,s3,...
             nextStates[i] = createVar(std::to_string(i)); // just like creating r1,r2,r3,... and rest of the BDDs will be based on manipualting for these basic varaibles
@@ -64,7 +64,7 @@ namespace ClassProject{
             cr = cr_it;
             nxtImg = existentialQuantification(existentialQuantification(and2(tau,cr), states), inputs); // Image in terms of the next state r1,r2,r3...
 
-            // remane the next state to present state.
+            // remane the next state to present state. (we need a mapping function from r's to s's. i.e r_i <==> s_i ---> (x_i xnor s_i)[ iff operator, if r's true, s's should be true and if r's is false, s's shoudl be false ] and later we can quantify it.)
             Img = True();
             for(int i=0; i<states.size(); i++){
                //  (we xnor the states and images (s1 xnor r1)(s2 xnor r2)(s3 xnor r3)...)
@@ -106,10 +106,18 @@ namespace ClassProject{
     void Reachability::setInitState(const std::vector<bool> &stateVector){
         if(stateVector.size() != states.size())
             throw std::runtime_error("Vector size does not match state variables");
-
+        
+        // If initial state is set and transisiton function is not set and only recheable state should be inital state
+        if(this->transitionFunctions == std::vector<BDD_ID>(transitionFunctions.size(), 0))
+        {
+            for(int i=0; i<transitionFunctions.size(); i++){
+                this->transitionFunctions[i] = stateVector[i] ? True() : False();
+            } 
+        }
         for(int i=0; i<stateVector.size(); i++){
             this->initState[i] = stateVector[i] ? True() : False();
-        }  
+        } 
+         
     }
 
     const std::vector<bool> Reachability::getInitState(){

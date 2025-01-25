@@ -15,7 +15,7 @@ namespace ClassProject {
     std::vector<BDD_ID> transitionFunctions;
     // Adding place holder for pure virtual functions
     public:
-    explicit Reachability(unsigned int stateSize, unsigned int inputSize = 0);
+    explicit Reachability(int stateSize, int inputSize = 0);
     Reachability(int param) : ReachabilityInterface(param) {
         // Derived class constructor body
     }
