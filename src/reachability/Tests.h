@@ -122,4 +122,60 @@ TEST_F(ReachabilityTest, lectureExample) {
     ASSERT_TRUE(fsm2_2->isReachable({true, false}));
     ASSERT_TRUE(fsm2_2->isReachable({true, true}));
 }
+
+TEST_F(ReachabilityTest, complexFSM) {
+    // Create a 4-state-bit FSM with 3 input bits
+    std::unique_ptr<ClassProject::ReachabilityInterface> fsm4_3 =
+        std::make_unique<ClassProject::Reachability>(3, 4);
+
+    // Retrieve input and state variables
+    std::vector<BDD_ID> inputVars = fsm4_3->getInputs();
+    std::vector<BDD_ID> stateVars = fsm4_3->getStates();
+
+    std::vector<BDD_ID> transitionFunctions;
+
+    // Assign state variables
+    auto s1 = stateVars.at(0);
+    auto s2 = stateVars.at(1);
+    auto s3 = stateVars.at(2);
+    auto s4 = stateVars.at(3);
+
+    // Assign input variables
+    auto x1 = inputVars.at(0);
+    auto x2 = inputVars.at(1);
+    auto x3 = inputVars.at(2);
+
+    // Define transition functions
+    // Example transitions:
+    // d1 = !x1 AND (s2 OR s3)
+    // d2 = x2 AND (s1 OR s4)
+    // d3 = x3 AND !(s1 AND s2)
+    // d4 = !x3 OR (s3 XOR s4)
+    transitionFunctions.push_back(fsm4_3->and2(fsm4_3->neg(x1), fsm4_3->or2(s2, s3)));
+    transitionFunctions.push_back(fsm4_3->and2(x2, fsm4_3->or2(s1, s4)));
+    transitionFunctions.push_back(fsm4_3->and2(x3, fsm4_3->neg(fsm4_3->and2(s1, s2))));
+    transitionFunctions.push_back(fsm4_3->or2(fsm4_3->neg(x3), fsm4_3->xor2(s3, s4)));
+
+    // Set the initial state to {0, 0, 0, 0}
+    fsm4_3->setInitState({false, false, false, false});
+
+    // Assign the transition functions to the FSM
+    fsm4_3->setTransitionFunctions(transitionFunctions);
+
+    // Assertions for reachability and distance
+    ASSERT_TRUE(fsm4_3->isReachable({false, false, false, false}));
+    ASSERT_EQ(fsm4_3->stateDistance({false, false, false, false}), 0);
+
+    ASSERT_TRUE(fsm4_3->isReachable({false, true, false, true}));
+    ASSERT_TRUE(fsm4_3->isReachable({true, false, true, false}));
+    ASSERT_TRUE(fsm4_3->isReachable({true, true, true, true}));
+
+    // Add more reachable states to test the symbolic traversal
+    ASSERT_TRUE(fsm4_3->isReachable({true, false, false, true}));
+    ASSERT_EQ(fsm4_3->stateDistance({true, false, false, true}), 2);
+
+    // Test unreachable state
+    ASSERT_FALSE(fsm4_3->isReachable({true, true, false, false}));
+}
+
 #endif
