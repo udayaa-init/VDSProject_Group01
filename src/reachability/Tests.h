@@ -125,12 +125,12 @@ TEST_F(ReachabilityTest, lectureExample) {
 
 TEST_F(ReachabilityTest, complexFSM) {
     // Create a 4-state-bit FSM with 3 input bits
-    std::unique_ptr<ClassProject::ReachabilityInterface> fsm4_3 =
-        std::make_unique<ClassProject::Reachability>(4, 3);
+    std::unique_ptr<ClassProject::ReachabilityInterface> fsm4_1 =
+        std::make_unique<ClassProject::Reachability>(4, 1);
 
     // Retrieve input and state variables
-    std::vector<BDD_ID> inputVars = fsm4_3->getInputs();
-    std::vector<BDD_ID> stateVars = fsm4_3->getStates();
+    std::vector<BDD_ID> inputVars = fsm4_1->getInputs();
+    std::vector<BDD_ID> stateVars = fsm4_1->getStates();
 
     std::vector<BDD_ID> transitionFunctions;
 
@@ -142,98 +142,84 @@ TEST_F(ReachabilityTest, complexFSM) {
 
     // Assign input variables
     auto x1 = inputVars.at(0);
-    auto x2 = inputVars.at(1);
-    auto x3 = inputVars.at(2);
-
+    
     // Define transition functions
     // Example transitions:
-    // d1 = !x1 AND (s2 OR s3)
-    // d2 = x2 AND (s1 OR s4)
-    // d3 = x3 AND !(s1 AND s2)
-    // d4 = !x3 OR (s3 XOR s4)
-    transitionFunctions.push_back(fsm4_3->and2(fsm4_3->neg(x1), fsm4_3->or2(s2, s3)));
-    transitionFunctions.push_back(fsm4_3->and2(x2, fsm4_3->or2(s1, s4)));
-    transitionFunctions.push_back(fsm4_3->and2(x3, fsm4_3->neg(fsm4_3->and2(s1, s2))));
-    transitionFunctions.push_back(fsm4_3->or2(fsm4_3->neg(x3), fsm4_3->xor2(s3, s4)));
+    // d1 = 0
+    // d2 = s2 XOR x1
+    // d3 = s3 XOR (s2 AND x1)
+    // d4 = s4 XOR (s3 AND (s2 AND x1))
 
-    // Set the initial state to {0, 0, 0, 0}
-    fsm4_3->setInitState({false, false, false, false});
+    // Define transition functions
+    transitionFunctions.push_back(fsm4_1->False());  // s1' = false
+    transitionFunctions.push_back(fsm4_1->xor2(s2, x1));  // s2' = XOR(s2, x)
+    transitionFunctions.push_back(fsm4_1->xor2(s3, fsm4_1->and2(s2, x1)));  // s3' = XOR(s3, AND(s2, x))
+    transitionFunctions.push_back(fsm4_1->xor2(s4, fsm4_1->and2(s3, fsm4_1->and2(s2, x1))));  // s4' = XOR(s4, AND(s3, AND(s2, x)))
+
+    // Set the initial state to {false, false, false, false} (0000)
+    fsm4_1->setInitState({false, false, false, false});
 
     // Assign the transition functions to the FSM
-    fsm4_3->setTransitionFunctions(transitionFunctions);
+    fsm4_1->setTransitionFunctions(transitionFunctions);
 
     // Assertions for reachability and distance
 
-    // INITIAL STATE
-    ASSERT_TRUE(fsm4_3->isReachable({false, false, false, false}));
-    ASSERT_EQ(fsm4_3->stateDistance({false, false, false, false}), 0);
-
-    // DISTANCE: 1
-    // 0 0 0 1
-    ASSERT_TRUE(fsm4_3->isReachable({false, false, false, true}));
-    ASSERT_EQ(fsm4_3->stateDistance({false, false, false, true}), 1);
+    // 0 0 0 0
+    ASSERT_TRUE(fsm4_1->isReachable({false, false, false, false}));
+    ASSERT_EQ(fsm4_1->stateDistance({false, false, false, false}), 0);
 
     // 0 0 1 0
-    ASSERT_TRUE(fsm4_3->isReachable({false, false, true, false}));
-    ASSERT_EQ(fsm4_3->stateDistance({false, false, true, false}), 1);
+    ASSERT_TRUE(fsm4_1->isReachable({false, true, false, false}));
+    ASSERT_EQ(fsm4_1->stateDistance({false, true, false, false}), 1);    
 
-    // DISTANCE: 2
-    // 0 0 1 1
-    ASSERT_TRUE(fsm4_3->isReachable({false, false, true, true}));
-    ASSERT_EQ(fsm4_3->stateDistance({false, false, true, true}), 2);
-
-    // 0 1 0 1
-    ASSERT_TRUE(fsm4_3->isReachable({false, true, false, true}));
-    ASSERT_EQ(fsm4_3->stateDistance({false, true, false, true}), 2);
-
-    // 0 1 1 1
-    ASSERT_TRUE(fsm4_3->isReachable({false, true, true, true}));
-    ASSERT_EQ(fsm4_3->stateDistance({false, true, true, true}), 2);
-
-    // 1 0 0 1
-    ASSERT_TRUE(fsm4_3->isReachable({true, false, false, true}));
-    ASSERT_EQ(fsm4_3->stateDistance({true, false, false, true}), 2);
-
-    // 1 0 1 1
-    ASSERT_TRUE(fsm4_3->isReachable({true, false, true, true}));
-    ASSERT_EQ(fsm4_3->stateDistance({true, false, true, true}), 2);
-
-    // DISTANCE: 3
+    // 0 1 0 0
+    ASSERT_TRUE(fsm4_1->isReachable({false, false, true, false}));
+    ASSERT_EQ(fsm4_1->stateDistance({false, false, true, false}), 2);
 
     // 0 1 1 0
-    ASSERT_TRUE(fsm4_3->isReachable({false, true, true, false}));
-    ASSERT_EQ(fsm4_3->stateDistance({false, true, true, false}), 3);
-
-    // 1 0 1 0
-    ASSERT_TRUE(fsm4_3->isReachable({true, false, true, false}));
-    ASSERT_EQ(fsm4_3->stateDistance({true, false, true, false}), 3);
-
-     // 1 1 0 1
-    ASSERT_TRUE(fsm4_3->isReachable({true, true, false, true}));
-    ASSERT_EQ(fsm4_3->stateDistance({true, true, false, true}), 3);
-
-    // 1 1 1 0
-    ASSERT_TRUE(fsm4_3->isReachable({true, true, true, false}));
-    ASSERT_EQ(fsm4_3->stateDistance({true, true, true, false}), 3);
-
-    // 1 1 1 1
-    ASSERT_TRUE(fsm4_3->isReachable({true, true, true, true}));
-    ASSERT_EQ(fsm4_3->stateDistance({true, true, true, true}), 3);
-
-    
-
-    // DISTANCE: 4
-    // 0 1 0 0
-    ASSERT_TRUE(fsm4_3->isReachable({false, true, false, false}));
-    ASSERT_EQ(fsm4_3->stateDistance({false, true, false, false}), 4);
+    ASSERT_TRUE(fsm4_1->isReachable({false, true, true, false}));
+    ASSERT_EQ(fsm4_1->stateDistance({false, true, true, false}), 3);
 
     // 1 0 0 0
-    ASSERT_TRUE(fsm4_3->isReachable({true, false, false, false}));
-    ASSERT_EQ(fsm4_3->stateDistance({true, false, false, false}), 4);
+    ASSERT_TRUE(fsm4_1->isReachable({false, false, false, true}));
+    ASSERT_EQ(fsm4_1->stateDistance({false, false, false, true}), 4);
+
+    // 1 0 1 0
+    ASSERT_TRUE(fsm4_1->isReachable({false, true, false, true}));
+    ASSERT_EQ(fsm4_1->stateDistance({false, true, false, true}), 5);
 
     // 1 1 0 0
-    ASSERT_TRUE(fsm4_3->isReachable({true, true, false, false}));
-    ASSERT_EQ(fsm4_3->stateDistance({true, true, false, false}), 4);
+    ASSERT_TRUE(fsm4_1->isReachable({false, false, true, true}));
+    ASSERT_EQ(fsm4_1->stateDistance({false, false, true, true}), 6);    
+
+    // 1 1 1 0
+    ASSERT_TRUE(fsm4_1->isReachable({false, true, true, true}));
+    ASSERT_EQ(fsm4_1->stateDistance({false, true, true, true}), 7);
+
+    // Unreachable Tests
+    // 0 0 0 1
+    ASSERT_FALSE(fsm4_1->isReachable({true, false, false, false}));
+
+    // 0 0 1 1
+    ASSERT_FALSE(fsm4_1->isReachable({true, true, false, false}));
+
+    // 0 1 0 1
+    ASSERT_FALSE(fsm4_1->isReachable({true, false, true, false}));
+
+    // 0 1 1 1
+    ASSERT_FALSE(fsm4_1->isReachable({true, true, true, false}));
+
+    // 1 0 0 1
+    ASSERT_FALSE(fsm4_1->isReachable({true, false, false, true}));
+
+    // 1 0 1 1
+    ASSERT_FALSE(fsm4_1->isReachable({true, true, false, true}));
+
+    // 1 1 0 1
+    ASSERT_FALSE(fsm4_1->isReachable({true, false, true, true}));
+
+    // 1 1 1 1
+    ASSERT_FALSE(fsm4_1->isReachable({true, true, true, true}));
 
 }
 
