@@ -126,7 +126,7 @@ TEST_F(ReachabilityTest, lectureExample) {
 TEST_F(ReachabilityTest, complexFSM) {
     // Create a 4-state-bit FSM with 3 input bits
     std::unique_ptr<ClassProject::ReachabilityInterface> fsm4_3 =
-        std::make_unique<ClassProject::Reachability>(3, 4);
+        std::make_unique<ClassProject::Reachability>(4, 3);
 
     // Retrieve input and state variables
     std::vector<BDD_ID> inputVars = fsm4_3->getInputs();
