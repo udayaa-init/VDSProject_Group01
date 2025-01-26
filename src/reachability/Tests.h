@@ -169,57 +169,71 @@ TEST_F(ReachabilityTest, complexFSM) {
     ASSERT_EQ(fsm4_3->stateDistance({false, false, false, false}), 0);
 
     // DISTANCE: 1
+    // 0 0 0 1
     ASSERT_TRUE(fsm4_3->isReachable({false, false, false, true}));
     ASSERT_EQ(fsm4_3->stateDistance({false, false, false, true}), 1);
 
+    // 0 0 1 0
     ASSERT_TRUE(fsm4_3->isReachable({false, false, true, false}));
     ASSERT_EQ(fsm4_3->stateDistance({false, false, true, false}), 1);
 
     // DISTANCE: 2
+    // 0 0 1 1
     ASSERT_TRUE(fsm4_3->isReachable({false, false, true, true}));
     ASSERT_EQ(fsm4_3->stateDistance({false, false, true, true}), 2);
 
-    ASSERT_TRUE(fsm4_3->isReachable({false, true, false, false}));
-    ASSERT_EQ(fsm4_3->stateDistance({false, true, false, false}), 2);
+    // 0 1 0 1
+    ASSERT_TRUE(fsm4_3->isReachable({false, true, false, true}));
+    ASSERT_EQ(fsm4_3->stateDistance({false, true, false, true}), 2);
+
+    // 0 1 1 1
+    ASSERT_TRUE(fsm4_3->isReachable({false, true, true, true}));
+    ASSERT_EQ(fsm4_3->stateDistance({false, true, true, true}), 2);
+
+    // 1 0 0 1
+    ASSERT_TRUE(fsm4_3->isReachable({true, false, false, true}));
+    ASSERT_EQ(fsm4_3->stateDistance({true, false, false, true}), 2);
+
+    // 1 0 1 1
+    ASSERT_TRUE(fsm4_3->isReachable({true, false, true, true}));
+    ASSERT_EQ(fsm4_3->stateDistance({true, false, true, true}), 2);
 
     // DISTANCE: 3
-    ASSERT_TRUE(fsm4_3->isReachable({false, true, false, true}));
-    ASSERT_EQ(fsm4_3->stateDistance({false, true, false, true}), 3);
 
+    // 0 1 1 0
     ASSERT_TRUE(fsm4_3->isReachable({false, true, true, false}));
     ASSERT_EQ(fsm4_3->stateDistance({false, true, true, false}), 3);
 
-    // DISTANCE: 4
-    ASSERT_TRUE(fsm4_3->isReachable({false, true, true, true}));
-    ASSERT_EQ(fsm4_3->stateDistance({false, true, true, true}), 4);
+    // 1 0 1 0
+    ASSERT_TRUE(fsm4_3->isReachable({true, false, true, false}));
+    ASSERT_EQ(fsm4_3->stateDistance({true, false, true, false}), 3);
 
+     // 1 1 0 1
+    ASSERT_TRUE(fsm4_3->isReachable({true, true, false, true}));
+    ASSERT_EQ(fsm4_3->stateDistance({true, true, false, true}), 3);
+
+    // 1 1 1 0
+    ASSERT_TRUE(fsm4_3->isReachable({true, true, true, false}));
+    ASSERT_EQ(fsm4_3->stateDistance({true, true, true, false}), 3);
+
+    // 1 1 1 1
+    ASSERT_TRUE(fsm4_3->isReachable({true, true, true, true}));
+    ASSERT_EQ(fsm4_3->stateDistance({true, true, true, true}), 3);
+
+    
+
+    // DISTANCE: 4
+    // 0 1 0 0
+    ASSERT_TRUE(fsm4_3->isReachable({false, true, false, false}));
+    ASSERT_EQ(fsm4_3->stateDistance({false, true, false, false}), 4);
+
+    // 1 0 0 0
     ASSERT_TRUE(fsm4_3->isReachable({true, false, false, false}));
     ASSERT_EQ(fsm4_3->stateDistance({true, false, false, false}), 4);
 
-    // DISTANCE: 5
-    ASSERT_TRUE(fsm4_3->isReachable({true, false, false, true}));
-    ASSERT_EQ(fsm4_3->stateDistance({true, false, false, true}), 5);
-
-    ASSERT_TRUE(fsm4_3->isReachable({true, false, true, false}));
-    ASSERT_EQ(fsm4_3->stateDistance({true, false, true, false}), 5);
-
-    // DISTANCE: 6
-    ASSERT_TRUE(fsm4_3->isReachable({true, false, true, true}));
-    ASSERT_EQ(fsm4_3->stateDistance({true, false, true, true}), 6);
-
+    // 1 1 0 0
     ASSERT_TRUE(fsm4_3->isReachable({true, true, false, false}));
-    ASSERT_EQ(fsm4_3->stateDistance({true, true, false, false}), 6);
-
-    // DISTANCE: 7
-    ASSERT_TRUE(fsm4_3->isReachable({true, true, false, true}));
-    ASSERT_EQ(fsm4_3->stateDistance({true, true, false, true}), 7);
-
-    ASSERT_TRUE(fsm4_3->isReachable({true, true, true, false}));
-    ASSERT_EQ(fsm4_3->stateDistance({true, true, true, false}), 7);
-
-    // DISTANCE: 8
-    ASSERT_TRUE(fsm4_3->isReachable({true, true, true, true}));
-    ASSERT_EQ(fsm4_3->stateDistance({true, true, true, true}), 4);
+    ASSERT_EQ(fsm4_3->stateDistance({true, true, false, false}), 4);
 
 }
 
