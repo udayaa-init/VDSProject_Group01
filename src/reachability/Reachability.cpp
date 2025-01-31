@@ -76,15 +76,24 @@ namespace ClassProject{
             cr_it = or2(cr, Img); // !!!!!!!!!!!!we get all the set of recheable state in terms of the BDD_ID!!!!!!!
             distance ++;
 
-            //chack if the provided is in recheable state space. How?? we have state the is recheable from theinitial state we can xnor with the curent state 
+            // chack if the provided is in recheable state space. How?? we have state the is recheable from the initial state(IMG) 
+            /* Method 1
             BDD_ID temp = Img;
             for(int i=0; i<stateVector.size(); i++){
                 BDD_ID sv = stateVector[i] ? True() : False();
                 temp = this->and2(temp, this->xnor2(sv, states[i]));
             }
 
-            // existential quantification with respect to the next state variables
+            // existential quantification with respect to the state variables
             temp = existentialQuantification(temp, states);    
+            */
+            // Method 2
+            BDD_ID temp = True();
+            for(int i=0; i<stateVector.size(); i++){
+                BDD_ID sv = stateVector[i] ? states[i] : neg(states[i]);
+                temp = this->and2(temp, sv);
+            }
+            temp = existentialQuantification(and2(Img, temp), states);
 
             if(temp == True()) return distance;
 
