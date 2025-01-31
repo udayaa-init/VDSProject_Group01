@@ -10,7 +10,7 @@ namespace ClassProject{
         states = std::vector<BDD_ID>(stateSize, 0);
         inputs = std::vector<BDD_ID>(inputSize, 0);
         nextStates = std::vector<BDD_ID>(stateSize, 0);
-        initState = std::vector<BDD_ID>(stateSize, 0);
+        initState = std::vector<BDD_ID>(stateSize, 0);// Can be set with the One BDD_ID that is the function of the state variables because there can be mutiple initial state
         transitionFunctions = std::vector<BDD_ID>(stateSize, 0);
         for (unsigned int i = 0; i < stateSize; i++) {
             transitionFunctions[i] = states[i] = createVar(std::to_string(i)); // just like creating s1,s2,s3,...
@@ -73,7 +73,7 @@ namespace ClassProject{
             }
             //Img = existentialQuantification(Img, nextStates); //// We need image in terms of the s1,s2,s3... here Img here( so we xnor the states and images (s1 xnor r1)(s2 xnor r2)(s3 xnor r3)...)
             Img = existentialQuantification(and2(Img, nxtImg), nextStates); // We anded both img and nextImg and removed the next state. so we all have img in term of s1,s22,s3...// existentialQuantification(existentialQuantification(and2(Img, nxtImg), nextStates),inputs);
-            cr_it = or2(cr, Img);
+            cr_it = or2(cr, Img); // !!!!!!!!!!!!we get all the set of recheable state in terms of the BDD_ID!!!!!!!
             distance ++;
 
             //chack if the provided is in recheable state space. How?? we have state the is recheable from theinitial state we can xnor with the curent state 
@@ -91,6 +91,7 @@ namespace ClassProject{
         }while(cr_it != cr);
         return -1;
     }
+    
     void Reachability::setTransitionFunctions(const std::vector<BDD_ID> &transitionFunctions){
 
         if(transitionFunctions.size() != states.size())
